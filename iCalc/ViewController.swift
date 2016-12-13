@@ -47,4 +47,19 @@ class ViewController: UIViewController {
             displayValue = brain.result
         }
     }
+    
+    var savedProgram: ICalcBrain.PropertyList?
+    
+    @IBAction func save() {
+        savedProgram = brain.program
+        userIsInTheMiddleOfTyping = false
+    }
+    
+    @IBAction func restore() {
+        if savedProgram != nil {
+            brain.program = savedProgram!
+            displayValue = brain.result
+            userIsInTheMiddleOfTyping = false
+        }
+    }
 }

@@ -36,6 +36,7 @@ class ICalcBrain {
     
     private var accumulator = 0.0
     private var pending: PendingBinaryOperationInfo?
+    private var internalProgram = [AnyObject]()
     
     var result: Double {
         get {
@@ -43,12 +44,42 @@ class ICalcBrain {
         }
     }
     
+    typealias PropertyList = AnyObject
+    
+    var program: PropertyList {
+        get {
+            return internalProgram as AnyObject
+        }
+        set {
+            clear()
+            
+            if let arrayOfOps = newValue as? [AnyObject] {
+                for op in arrayOfOps {
+                    if let operand = op as? Double {
+                        setOperand(operand: operand)
+                    } else if let operation = op as? String {
+                        performOperation(symbol: operation)
+                    }
+                }
+            }
+        }
+    }
+    
+    func clear() {
+        accumulator = 0.0
+        pending = nil
+        internalProgram.removeAll()
+    }
+    
     func setOperand(operand: Double) {
         accumulator = operand
+        internalProgram.append(operand as AnyObject)
     }
     
     func performOperation(symbol: String) {
         if let operation = operations[symbol] {
+            internalProgram.append(symbol as AnyObject)
+            
             switch operation {
             case .constant(let value):
                 accumulator = value
